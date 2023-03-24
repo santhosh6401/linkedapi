@@ -4,5 +4,5 @@ import lombok.Data;
 
 @Data
 public class UpdateProfileCallLinkedInRequest {
-    private String linkedInUrl;
+    private String emailId;
 }

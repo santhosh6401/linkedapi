@@ -13,10 +13,6 @@ public interface UserService {
 
     CommonResponse deleteUser(DeleteUserRequest request) throws Exception;
 
-    CommonResponse forgetPassword(ForgetPasswordRequest request);
-
-    CommonResponse resetPassword(PasswordResetRequest request);
-
     UserResponse signIn(SignInRequest request) throws Exception;
 
     CommonResponse passwordUpdate(UpdatePasswordRequest request) throws Exception;
@@ -24,6 +20,4 @@ public interface UserService {
     UserResponse updateUser(UpdateUserRequest request) throws Exception;
 
     List<UserResponse> getUsers(GetUsersRequest request);
-
-    List<DeletedUserResponse> deletedUsersDetails();
 }

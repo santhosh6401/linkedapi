@@ -3,11 +3,11 @@ package com.linkedin.profile360.controller;
 
 import com.linkedin.profile360.model.request.user.*;
 import com.linkedin.profile360.model.response.CommonResponse;
-import com.linkedin.profile360.model.response.DeletedUserResponse;
 import com.linkedin.profile360.model.response.UserResponse;
 import com.linkedin.profile360.service.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -21,26 +21,19 @@ public class UserController {
     private UserService userService;
 
     @PostMapping("/signup")
-    public UserResponse signup(@RequestBody SignUpRequest request) throws Exception {
+    @ResponseStatus(code = HttpStatus.OK)
+    public UserResponse signup(SignUpRequest request) throws Exception {
         return userService.signUp(request);
     }
 
     @DeleteMapping("")
-    public CommonResponse deleteUser(DeleteUserRequest request) {
+    @ResponseStatus(code = HttpStatus.OK)
+    public CommonResponse deleteUser(DeleteUserRequest request) throws Exception {
         return userService.deleteUser(request);
     }
 
-    @PutMapping("/forget/password")
-    public CommonResponse forgetPassword(ForgetPasswordRequest request) {
-        return userService.forgetPassword(request);
-    }
-
-    @PutMapping("/reset/password")
-    public CommonResponse passwordReset(PasswordResetRequest request) {
-        return userService.resetPassword(request);
-    }
-
     @PostMapping("/signIn")
+    @ResponseStatus(code = HttpStatus.OK)
     public UserResponse signIn(SignInRequest request) throws Exception {
         return userService.signIn(request);
     }
@@ -51,18 +44,16 @@ public class UserController {
     }
 
     @PutMapping("")
+    @ResponseStatus(code = HttpStatus.OK)
     public UserResponse userUpdate(UpdateUserRequest request) throws Exception {
         return userService.updateUser(request);
     }
 
     @GetMapping("")
+    @ResponseStatus(code = HttpStatus.OK)
     public List<UserResponse> getUsers(GetUsersRequest request) {
         return userService.getUsers(request);
     }
 
-    @GetMapping("deleted/users")
-    public List<DeletedUserResponse> deletedUsers(){
-        return userService.deletedUsersDetails();
-    }
 
 }

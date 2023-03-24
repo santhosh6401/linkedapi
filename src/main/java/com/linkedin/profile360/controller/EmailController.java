@@ -7,11 +7,9 @@ import com.linkedin.profile360.model.response.EmailResponse;
 import com.linkedin.profile360.service.EmailService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
+import javax.mail.MessagingException;
 import java.util.List;
 
 @RestController
@@ -23,13 +21,13 @@ public class EmailController {
     private EmailService emailService;
 
     @PostMapping("/send")
-    public CommonResponse sendEmail(String emailId, EmailRequest request) {
+    public CommonResponse sendEmail(String emailId, EmailRequest request) throws MessagingException {
         return emailService.sendEmail(emailId, request);
     }
 
     @PostMapping("/send/all")
-    public CommonResponse sendAll(EmailRequest request) {
-        return emailService.sendEmailAll(request);
+    public CommonResponse sendAll(@RequestParam String batch, EmailRequest request) {
+        return emailService.sendEmailAll(batch, request);
     }
 
     @GetMapping("/history")

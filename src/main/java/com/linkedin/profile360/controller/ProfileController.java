@@ -20,32 +20,32 @@ public class ProfileController {
     private ProfileService profileService;
 
     @PostMapping("")
-    public ProfileResponse createProfile(CreateProfileRequest request) {
+    public ProfileResponse createProfile(CreateProfileRequest request) throws Exception {
         return profileService.createProfile(request);
     }
 
     @PutMapping("")
-    public ProfileResponse updateProfile(UpdateProfileRequest request) {
+    public ProfileResponse updateProfile(UpdateProfileRequest request) throws Exception {
         return profileService.updateProfile(request);
     }
 
     @DeleteMapping("")
-    public CommonResponse deleteProfile(DeleteProfileRequest request) {
+    public CommonResponse deleteProfile(DeleteProfileRequest request) throws Exception {
         return profileService.deleteProfile(request);
     }
 
     @GetMapping("")
-    public List<ProfileResponse> getProfiles(GetProfileRequest request) {
+    public List<ProfileResponse> getProfiles(GetProfileRequest request) throws Exception {
         return profileService.getProfiles(request);
     }
 
     @PutMapping("/linkedIn")
-    public ProfileResponse updateByLinkedIn(UpdateProfileCallLinkedInRequest request) {
+    public ProfileResponse updateByLinkedIn(UpdateProfileCallLinkedInRequest request) throws Exception {
         return profileService.updateByLinkedIn(request);
     }
 
     @PutMapping("/linkedIn/all")
-    public List<CommonResponse> updateAllProfileByLinkedIn() {
+    public List<CommonResponse> updateAllProfileByLinkedIn() throws Exception {
         return profileService.updateByAllProfile();
     }
 }

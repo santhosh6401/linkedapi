@@ -5,7 +5,6 @@ import com.linkedin.profile360.model.entity.DeletedUserEntity;
 import com.linkedin.profile360.model.entity.UserEntity;
 import com.linkedin.profile360.model.request.user.*;
 import com.linkedin.profile360.model.response.CommonResponse;
-import com.linkedin.profile360.model.response.DeletedUserResponse;
 import com.linkedin.profile360.model.response.UserResponse;
 import com.linkedin.profile360.repository.DeletedUserRepository;
 import com.linkedin.profile360.repository.UserRepository;
@@ -14,7 +13,9 @@ import com.linkedin.profile360.utils.Helper;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.util.CollectionUtils;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -34,7 +35,7 @@ public class UserServiceImplementation implements UserService {
     public UserResponse signUp(SignUpRequest request) throws Exception {
         Optional<UserEntity> userEntityOptional = userRepository.findByUserName(request.getUserName());
         if (userEntityOptional.isPresent()) {
-            throw new Exception("user name already exist");
+            throw new Exception("USER NAME ALREADY EXIST");
         }
         if (request.getConfirmPassword().equals(request.getPassword())) {
             UserEntity entity = new UserEntity();
@@ -45,7 +46,7 @@ public class UserServiceImplementation implements UserService {
             BeanUtils.copyProperties(entity, userResponse);
             return userResponse;
         }
-        throw new Exception("confirmation password is in correct...");
+        throw new Exception("CONFIRMATION PASSWORD IS IN CORRECT...");
     }
 
     @Override
@@ -54,23 +55,13 @@ public class UserServiceImplementation implements UserService {
         if (userEntityOptional.isPresent()) {
             CommonResponse response = new CommonResponse();
             DeletedUserEntity entity = new DeletedUserEntity();
-            BeanUtils.copyProperties(userEntityOptional.get(),entity);
+            BeanUtils.copyProperties(userEntityOptional.get(), entity);
             entity.setReason(request.getReason());
             deletedUserRepository.save(entity);
             userRepository.delete(userEntityOptional.get());
             return response;
         }
         throw new Exception("username or password is incorrect");
-    }
-
-    @Override
-    public CommonResponse forgetPassword(ForgetPasswordRequest request) {
-        return null;
-    }
-
-    @Override
-    public CommonResponse resetPassword(PasswordResetRequest request) {
-        return null;
     }
 
     @Override
@@ -91,13 +82,14 @@ public class UserServiceImplementation implements UserService {
             UserEntity entity = userEntityOptional.get();
             if (request.getNewPassword().equals(request.getConfirmNewPassword())) {
                 entity.setPassword(request.getNewPassword());
+                userRepository.save(entity);
                 CommonResponse response = new CommonResponse();
-                response.setResult("new password updated successfully");
+                response.setResult("NEW PASSWORD UPDATED SUCCESSFULLY");
                 return response;
             }
-            throw new Exception("new password and confirm password not match");
+            throw new Exception("NEW PASSWORD AND CONFIRM PASSWORD NOT MATCH");
         }
-        throw new Exception("username or password is incorrect");
+        throw new Exception("USERNAME OR PASSWORD IS INCORRECT");
     }
 
     @Override
@@ -112,16 +104,21 @@ public class UserServiceImplementation implements UserService {
             BeanUtils.copyProperties(entity, userResponse);
             return userResponse;
         }
-        throw new Exception("username is incorrect");
+        throw new Exception("USERNAME IS INCORRECT");
     }
 
     @Override
     public List<UserResponse> getUsers(GetUsersRequest request) {
-        return null;
-    }
-
-    @Override
-    public List<DeletedUserResponse> deletedUsersDetails() {
+        List<UserEntity> entities = userRepository.findAll();
+        if (!CollectionUtils.isEmpty(entities)) {
+            List<UserResponse> responses = new ArrayList<>();
+            entities.forEach(userEntity -> {
+                UserResponse response = new UserResponse();
+                BeanUtils.copyProperties(userEntity, response);
+                responses.add(response);
+            });
+            return responses;
+        }
         return null;
     }
 }

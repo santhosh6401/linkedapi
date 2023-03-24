@@ -5,6 +5,7 @@ import com.linkedin.profile360.model.common.Audit;
 import com.linkedin.profile360.model.common.Education;
 import com.linkedin.profile360.model.common.Experience;
 import lombok.Data;
+import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 import java.util.List;
@@ -12,6 +13,7 @@ import java.util.List;
 @Data
 @Document(collection = "profile")
 public class ProfileEntity {
+    @Id
     private String id;
     private String firstname;
     private String lastname;

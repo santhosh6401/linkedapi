@@ -8,15 +8,15 @@ import java.util.List;
 
 public interface ProfileService {
 
-    ProfileResponse createProfile(CreateProfileRequest request);
+    ProfileResponse createProfile(CreateProfileRequest request) throws Exception;
 
-    ProfileResponse updateProfile(UpdateProfileRequest request);
+    ProfileResponse updateProfile(UpdateProfileRequest request) throws Exception;
 
-    List<ProfileResponse> getProfiles(GetProfileRequest request);
+    List<ProfileResponse> getProfiles(GetProfileRequest request) throws Exception;
 
-    CommonResponse deleteProfile(DeleteProfileRequest request);
+    CommonResponse deleteProfile(DeleteProfileRequest request) throws Exception;
 
-    ProfileResponse updateByLinkedIn(UpdateProfileCallLinkedInRequest request);
+    ProfileResponse updateByLinkedIn(UpdateProfileCallLinkedInRequest request) throws Exception;
 
-    List<CommonResponse> updateByAllProfile();
+    List<CommonResponse> updateByAllProfile() throws Exception;
 }
