@@ -1,6 +1,7 @@
 package com.linkedin.profile360.service.serviceImpl;
 
 
+import com.linkedin.profile360.exception.GeneralException;
 import com.linkedin.profile360.model.entity.DeletedUserEntity;
 import com.linkedin.profile360.model.entity.UserEntity;
 import com.linkedin.profile360.model.request.user.*;
@@ -12,6 +13,7 @@ import com.linkedin.profile360.service.UserService;
 import com.linkedin.profile360.utils.Helper;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 
@@ -32,10 +34,10 @@ public class UserServiceImplementation implements UserService {
     private Helper helper;
 
     @Override
-    public UserResponse signUp(SignUpRequest request) throws Exception {
+    public UserResponse signUp(SignUpRequest request) throws RuntimeException {
         Optional<UserEntity> userEntityOptional = userRepository.findByUserName(request.getUserName());
         if (userEntityOptional.isPresent()) {
-            throw new Exception("USER NAME ALREADY EXIST");
+            throw new GeneralException(HttpStatus.NOT_FOUND,"USER NAME ALREADY EXIST");
         }
         if (request.getConfirmPassword().equals(request.getPassword())) {
             UserEntity entity = new UserEntity();
@@ -46,11 +48,11 @@ public class UserServiceImplementation implements UserService {
             BeanUtils.copyProperties(entity, userResponse);
             return userResponse;
         }
-        throw new Exception("CONFIRMATION PASSWORD IS IN CORRECT...");
+        throw new GeneralException(HttpStatus.NOT_FOUND,"CONFIRMATION PASSWORD IS IN CORRECT...");
     }
 
     @Override
-    public CommonResponse deleteUser(DeleteUserRequest request) throws Exception {
+    public CommonResponse deleteUser(DeleteUserRequest request) throws RuntimeException {
         Optional<UserEntity> userEntityOptional = userRepository.findByUserNameAndPassword(request.getUserName(), request.getPassword());
         if (userEntityOptional.isPresent()) {
             CommonResponse response = new CommonResponse();
@@ -61,22 +63,22 @@ public class UserServiceImplementation implements UserService {
             userRepository.delete(userEntityOptional.get());
             return response;
         }
-        throw new Exception("username or password is incorrect");
+        throw new GeneralException(HttpStatus.NOT_FOUND,"USERNAME OR PASSWORD IS INCORRECT");
     }
 
     @Override
-    public UserResponse signIn(SignInRequest request) throws Exception {
+    public UserResponse signIn(SignInRequest request) throws RuntimeException {
         Optional<UserEntity> userEntityOptional = userRepository.findByUserNameAndPassword(request.getUserName(), request.getPassword());
         if (userEntityOptional.isPresent()) {
             UserResponse response = new UserResponse();
             BeanUtils.copyProperties(userEntityOptional.get(), response);
             return response;
         }
-        throw new Exception("username or password is incorrect");
+        throw new GeneralException(HttpStatus.NOT_FOUND,"USERNAME OR PASSWORD IS INCORRECT");
     }
 
     @Override
-    public CommonResponse passwordUpdate(UpdatePasswordRequest request) throws Exception {
+    public CommonResponse passwordUpdate(UpdatePasswordRequest request) throws RuntimeException {
         Optional<UserEntity> userEntityOptional = userRepository.findByUserNameAndPassword(request.getUserName(), request.getCurrentPassword());
         if (userEntityOptional.isPresent()) {
             UserEntity entity = userEntityOptional.get();
@@ -87,13 +89,13 @@ public class UserServiceImplementation implements UserService {
                 response.setResult("NEW PASSWORD UPDATED SUCCESSFULLY");
                 return response;
             }
-            throw new Exception("NEW PASSWORD AND CONFIRM PASSWORD NOT MATCH");
+            throw new GeneralException(HttpStatus.NOT_FOUND,"NEW PASSWORD AND CONFIRM PASSWORD NOT MATCH");
         }
-        throw new Exception("USERNAME OR PASSWORD IS INCORRECT");
+        throw new GeneralException(HttpStatus.NOT_FOUND,"USERNAME OR PASSWORD IS INCORRECT");
     }
 
     @Override
-    public UserResponse updateUser(UpdateUserRequest request) throws Exception {
+    public UserResponse updateUser(UpdateUserRequest request) throws RuntimeException {
         Optional<UserEntity> userEntityOptional = userRepository.findByUserName(request.getUserName());
         if (userEntityOptional.isPresent()) {
             UserEntity entity = userEntityOptional.get();
@@ -104,7 +106,7 @@ public class UserServiceImplementation implements UserService {
             BeanUtils.copyProperties(entity, userResponse);
             return userResponse;
         }
-        throw new Exception("USERNAME IS INCORRECT");
+        throw new GeneralException(HttpStatus.NOT_FOUND,"USERNAME IS INCORRECT");
     }
 
     @Override
@@ -119,6 +121,6 @@ public class UserServiceImplementation implements UserService {
             });
             return responses;
         }
-        return null;
+        throw new GeneralException(HttpStatus.NOT_FOUND,"RECORDS NOT FOUND");
     }
 }

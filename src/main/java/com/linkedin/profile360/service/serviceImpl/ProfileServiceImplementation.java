@@ -1,5 +1,6 @@
 package com.linkedin.profile360.service.serviceImpl;
 
+import com.linkedin.profile360.exception.GeneralException;
 import com.linkedin.profile360.model.dto.LinkedInProfileDto;
 import com.linkedin.profile360.model.entity.ProfileEntity;
 import com.linkedin.profile360.model.request.profile.*;
@@ -14,6 +15,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 import org.springframework.util.ObjectUtils;
@@ -38,7 +40,7 @@ public class ProfileServiceImplementation implements ProfileService {
     public ProfileResponse createProfile(CreateProfileRequest request) throws Exception {
         Optional<ProfileEntity> profileEntityOptional = profileRepository.findByEmailId(request.getEmailId());
         if (profileEntityOptional.isPresent()) {
-            throw new Exception("PROFILE EMAIL-ID ALREADY EXIST");
+            throw new GeneralException(HttpStatus.NOT_FOUND,"PROFILE EMAIL-ID ALREADY EXIST");
         }
         ProfileEntity entity = new ProfileEntity();
         BeanUtils.copyProperties(request, entity);
@@ -53,7 +55,7 @@ public class ProfileServiceImplementation implements ProfileService {
     public ProfileResponse updateProfile(UpdateProfileRequest request) throws Exception {
         Optional<ProfileEntity> profileEntityOptional = profileRepository.findByEmailId(request.getEmailId());
         if (profileEntityOptional.isEmpty()) {
-            throw new Exception("PROFILE EMAIL-ID NOT PRESENT");
+            throw new GeneralException(HttpStatus.NOT_FOUND,"PROFILE EMAIL-ID NOT PRESENT");
         }
         ProfileEntity entity = profileEntityOptional.get();
         BeanUtils.copyProperties(request, entity);
@@ -90,14 +92,14 @@ public class ProfileServiceImplementation implements ProfileService {
             });
             return response;
         }
-        throw new Exception("RECORDS NOT FOUND");
+        throw new GeneralException(HttpStatus.NOT_FOUND,"RECORDS NOT FOUND");
     }
 
     @Override
     public CommonResponse deleteProfile(DeleteProfileRequest request) throws Exception {
         Optional<ProfileEntity> profileEntityOptional = profileRepository.findByEmailId(request.getEmailId());
         if (profileEntityOptional.isEmpty()) {
-            throw new Exception("PROFILE EMAIL-ID NOT PRESENT");
+            throw new GeneralException(HttpStatus.NOT_FOUND,"PROFILE EMAIL-ID NOT PRESENT");
         }
         ProfileEntity entity = profileEntityOptional.get();
         profileRepository.delete(entity);
@@ -111,7 +113,7 @@ public class ProfileServiceImplementation implements ProfileService {
         Optional<ProfileEntity> profileEntityOptional = profileRepository.findByEmailId(request.getEmailId());
         ProfileResponse response = new ProfileResponse();
         if (profileEntityOptional.isEmpty()) {
-            throw new Exception("PROFILE NOT PRESENT || NOT ABLE TO UPDATE");
+            throw new GeneralException(HttpStatus.NOT_FOUND,"PROFILE NOT PRESENT || NOT ABLE TO UPDATE");
         }
         ProfileEntity entity = profileEntityOptional.get();
         LinkedInProfileDto linkedInProfileDto = linkedInService.callLinkedInApi(entity.getLinkedInUrl());
@@ -130,7 +132,7 @@ public class ProfileServiceImplementation implements ProfileService {
         List<ProfileEntity> entities = profileRepository.findAll();
         List<CommonResponse> responses = new ArrayList<>();
         if (CollectionUtils.isEmpty(entities)) {
-            throw new Exception("RECORDS NOT FOUND");
+            throw new GeneralException(HttpStatus.NOT_FOUND,"RECORDS NOT FOUND");
         }
         entities.forEach(profileEntity -> {
             CommonResponse response = new CommonResponse();
@@ -138,7 +140,7 @@ public class ProfileServiceImplementation implements ProfileService {
             try {
                 linkedInProfileDto = linkedInService.callLinkedInApi(profileEntity.getLinkedInUrl());
             } catch (Exception e) {
-                throw new RuntimeException("ERROR WHILE CALLING LINKEDIN API");
+                throw new GeneralException(HttpStatus.NOT_FOUND,"ERROR WHILE CALLING LINKEDIN API");
             }
             profileEntity.setLinkedInProfileUrl(linkedInProfileDto.getProfile_pic_url());
             profileEntity.setCompanyExperienceDetails(linkedInProfileDto.getExperiences());
