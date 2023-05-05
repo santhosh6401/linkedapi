@@ -3,7 +3,9 @@ package com.linkedin.profile360.service;
 import com.linkedin.profile360.model.request.profile.*;
 import com.linkedin.profile360.model.response.CommonResponse;
 import com.linkedin.profile360.model.response.ProfileResponse;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
 import java.util.List;
 
 public interface ProfileService {
@@ -19,4 +21,6 @@ public interface ProfileService {
     ProfileResponse updateByLinkedIn(UpdateProfileCallLinkedInRequest request) throws Exception;
 
     List<CommonResponse> updateByAllProfile() throws Exception;
+
+    List<String> uploadExcel(MultipartFile multipartFile) throws IOException;
 }

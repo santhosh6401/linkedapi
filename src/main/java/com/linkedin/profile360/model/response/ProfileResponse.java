@@ -19,7 +19,9 @@ public class ProfileResponse {
     private String linkedInProfileUrl;
     private String currentOccupation;
     private String workedCompaniesCount;
+    private Experience latestCompanyDetails;
     private List<Experience> companyExperienceDetails;
     private List<Education> educationDetails;
     private Audit audit;
+    private boolean alumini;
 }

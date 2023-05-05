@@ -1,14 +1,14 @@
 package com.linkedin.profile360.model.request.profile;
 
-import com.linkedin.profile360.model.common.Audit;
-import com.linkedin.profile360.model.common.Education;
-import com.linkedin.profile360.model.common.Experience;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
-
-import java.util.ArrayList;
-import java.util.List;
+import lombok.NoArgsConstructor;
 
 @Data
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
 public class UpdateProfileRequest {
     private String firstname;
     private String lastname;
@@ -17,5 +17,6 @@ public class UpdateProfileRequest {
     private String mobileNo;
     private String emailId;
     private String linkedInUrl;
+    private String linkedInProfileUrl;
 
 }
