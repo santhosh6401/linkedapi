@@ -12,4 +12,5 @@ public class EmailResponse {
     private String subject;
     private String body;
     private Audit audit;
+    private String createdOn;
 }

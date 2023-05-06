@@ -71,6 +71,7 @@ public class EmailServiceImplementation implements EmailService {
         entities.forEach(emailEntity -> {
             EmailResponse emailResponse = new EmailResponse();
             BeanUtils.copyProperties(emailEntity, emailResponse);
+            emailResponse.setCreatedOn(emailEntity.getAudit().getCreatedOn());
             emailResponses.add(emailResponse);
         });
         return emailResponses;
