@@ -65,6 +65,7 @@ public class Helper {
         entity.setSubject(subject);
         entity.setBody(body);
         entity.setCc(cc);
+        setAudit(entity);
         return entity;
     }
 

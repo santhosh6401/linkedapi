@@ -19,7 +19,6 @@ import org.apache.poi.xssf.usermodel.XSSFSheet;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Sort;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
@@ -138,7 +137,7 @@ public class ProfileServiceImplementation implements ProfileService {
         }
         ProfileEntity entity = profileEntityOptional.get();
         LinkedInProfileDto linkedInProfileDto = linkedInService.callLinkedInApi(entity.getLinkedInUrl());
-        entity.setLinkedInProfileUrl(linkedInProfileDto.getProfile_pic_url());
+        //entity.setLinkedInProfileUrl(linkedInProfileDto.getProfile_pic_url());
         entity.setCompanyExperienceDetails(linkedInProfileDto.getExperiences());
         entity.setCurrentOccupation(linkedInProfileDto.getOccupation());
         entity.setWorkedCompaniesCount(String.valueOf(linkedInProfileDto.getExperiences().size()));
