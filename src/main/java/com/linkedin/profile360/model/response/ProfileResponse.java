@@ -24,4 +24,5 @@ public class ProfileResponse {
     private List<Education> educationDetails;
     private Audit audit;
     private boolean alumini;
+    private int indexCount;
 }

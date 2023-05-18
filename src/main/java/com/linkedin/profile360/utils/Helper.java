@@ -48,10 +48,11 @@ public class Helper {
         helper.setSubject(subject);
         helper.setFrom(from);
         helper.setTo(recipient);
-        if(Objects.nonNull(cc)){
+        if (Objects.nonNull(cc)) {
             helper.setCc(cc);
         }
-        helper.setText(body);
+        boolean html = true;
+        helper.setText(body, html);
         mailSender.send(message);
 
         emailRepository.save(createHistory(recipient, cc, subject, body));

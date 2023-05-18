@@ -44,6 +44,7 @@ public class ProfileServiceImplementation implements ProfileService {
     @Autowired
     private MongoTemplate mongoTemplate;
 
+
     @Override
     public ProfileResponse createProfile(CreateProfileRequest request) throws Exception {
         Optional<ProfileEntity> profileEntityOptional = profileRepository.findByEmailId(request.getEmailId());
@@ -79,6 +80,8 @@ public class ProfileServiceImplementation implements ProfileService {
 
         List<ProfileResponse> response = new ArrayList<>();
 
+        int count = 0;
+
         Query query = new Query();
         if (!ObjectUtils.isEmpty(request.getEmailId())) {
             query.addCriteria(Criteria.where("emailId").is(request.getEmailId()));
@@ -92,13 +95,15 @@ public class ProfileServiceImplementation implements ProfileService {
         List<ProfileEntity> entities = mongoTemplate.find(query, ProfileEntity.class);
 
         Collections.reverse(entities);
+
         if (!CollectionUtils.isEmpty(entities)) {
-            entities.forEach(profileEntity -> {
+
+            for (ProfileEntity profileEntity : entities) {
                 ProfileResponse profileResponse = new ProfileResponse();
                 BeanUtils.copyProperties(profileEntity, profileResponse);
-                if (Objects.nonNull(profileEntity.getCompanyExperienceDetails()) && Objects.nonNull(profileEntity.getCompanyExperienceDetails().get(profileEntity.getCompanyExperienceDetails().size() - 1)))
+                if (Objects.nonNull(profileEntity.getCompanyExperienceDetails()) && !profileEntity.getCompanyExperienceDetails().isEmpty()) {
                     profileResponse.setLatestCompanyDetails(profileEntity.getCompanyExperienceDetails().get(profileEntity.getCompanyExperienceDetails().size() - 1));
-                else {
+                } else {
                     profileResponse.setLatestCompanyDetails(new Experience());
                 }
                 int currentYear = LocalDate.now().getYear();
@@ -108,8 +113,10 @@ public class ProfileServiceImplementation implements ProfileService {
                         profileResponse.setAlumini(true);
                     }
                 }
+                profileResponse.setIndexCount(count);
+                count++;
                 response.add(profileResponse);
-            });
+            }
             return response;
         }
         throw new GeneralException(HttpStatus.NOT_FOUND, "RECORDS NOT FOUND");
@@ -138,10 +145,17 @@ public class ProfileServiceImplementation implements ProfileService {
         ProfileEntity entity = profileEntityOptional.get();
         LinkedInProfileDto linkedInProfileDto = linkedInService.callLinkedInApi(entity.getLinkedInUrl());
         //entity.setLinkedInProfileUrl(linkedInProfileDto.getProfile_pic_url());
-        entity.setCompanyExperienceDetails(linkedInProfileDto.getExperiences());
-        entity.setCurrentOccupation(linkedInProfileDto.getOccupation());
-        entity.setWorkedCompaniesCount(String.valueOf(linkedInProfileDto.getExperiences().size()));
-        entity.setEducationDetails(linkedInProfileDto.getEducation());
+        if (Objects.nonNull(linkedInProfileDto.getExperiences())) {
+            entity.setCompanyExperienceDetails(linkedInProfileDto.getExperiences());
+            entity.setWorkedCompaniesCount(String.valueOf(linkedInProfileDto.getExperiences().size()));
+        }
+        if (Objects.nonNull(linkedInProfileDto.getEducation())) {
+            entity.setEducationDetails(linkedInProfileDto.getEducation());
+        }
+        if (Objects.nonNull(linkedInProfileDto.getOccupation())) {
+            entity.setCurrentOccupation(linkedInProfileDto.getOccupation());
+
+        }
         profileRepository.save(entity);
         BeanUtils.copyProperties(entity, response);
         return response;
